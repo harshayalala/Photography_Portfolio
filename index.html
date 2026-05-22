@@ -4,140 +4,152 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sai Harsha Photography</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=DM+Sans:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Outfit:wght@100;200;300;400&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --cream: #faf6f0;
-      --warm: #f2ebe0;
-      --sand: #e8ddd0;
-      --stone: #b5a898;
-      --dark: #2a2420;
+      --cream: #f8f3ec;
+      --warm: #f0e8db;
+      --sand: #e2d4c3;
+      --stone: #9e8e7e;
+      --dark: #1e1712;
       --accent: #c9a96e;
-      --accent2: #8b6914;
+      --accent2: #7a5c1e;
+      --glow: rgba(201,169,110,0.18);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'DM Sans', sans-serif;
-      background-color: var(--cream);
-      color: var(--dark);
+      font-family: 'Outfit', sans-serif;
+      background: var(--dark);
+      color: var(--cream);
       overflow-x: hidden;
+      cursor: none;
     }
 
-    .font-display { font-family: 'Playfair Display', Georgia, serif; }
-
-    /* ── CURSOR ── */
-    .cursor {
-      width: 12px; height: 12px;
-      background: var(--accent);
+    /* ── LIQUID CURSOR ── */
+    #cursor-main {
+      position: fixed; z-index: 9999; pointer-events: none;
+      width: 16px; height: 16px;
       border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9999;
+      background: var(--accent);
       transform: translate(-50%, -50%);
-      transition: width 0.3s, height 0.3s, background 0.3s;
-      mix-blend-mode: multiply;
+      transition: width 0.4s cubic-bezier(0.23,1,0.32,1),
+                  height 0.4s cubic-bezier(0.23,1,0.32,1),
+                  background 0.3s;
+      mix-blend-mode: screen;
+      will-change: left, top;
     }
-    .cursor.expand {
+    #cursor-trail {
+      position: fixed; z-index: 9998; pointer-events: none;
       width: 48px; height: 48px;
-      background: rgba(201,169,110,0.3);
+      border-radius: 50%;
+      border: 1px solid rgba(201,169,110,0.4);
+      transform: translate(-50%, -50%);
+      transition: left 0.18s cubic-bezier(0.23,1,0.32,1),
+                  top 0.18s cubic-bezier(0.23,1,0.32,1),
+                  width 0.4s, height 0.4s, opacity 0.3s;
+      will-change: left, top;
     }
-    @media (hover: none) { .cursor { display: none; } }
+    body.hovering #cursor-main {
+      width: 8px; height: 8px; background: white;
+    }
+    body.hovering #cursor-trail {
+      width: 80px; height: 80px;
+      border-color: rgba(201,169,110,0.6);
+    }
+    @media (hover: none) { #cursor-main, #cursor-trail { display: none; } }
+
+    /* ── PARTICLE CANVAS ── */
+    #particle-canvas {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
 
     /* ── NAV ── */
     nav {
       position: fixed; top: 0; left: 0; right: 0;
       z-index: 100;
-      padding: 1.25rem 2rem;
+      padding: 1.5rem 2.5rem;
       display: flex; align-items: center; justify-content: space-between;
-      transition: background 0.4s, box-shadow 0.4s;
+      transition: background 0.6s, backdrop-filter 0.6s;
     }
     nav.scrolled {
-      background: rgba(250,246,240,0.92);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 1px 0 var(--sand);
+      background: rgba(18,12,8,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(201,169,110,0.1);
     }
     .nav-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
       font-style: italic;
-      letter-spacing: 0.05em;
-      color: var(--dark);
+      font-weight: 300;
+      color: var(--accent);
       text-decoration: none;
-    }
-    .nav-links {
-      display: flex; gap: 2.5rem;
-      list-style: none;
-    }
-    .nav-links a {
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--dark);
-      text-decoration: none;
-      opacity: 0.6;
-      transition: opacity 0.3s;
+      letter-spacing: 0.1em;
       position: relative;
     }
-    .nav-links a::after {
+    .nav-logo::after {
       content: '';
-      position: absolute; bottom: -4px; left: 0; right: 0;
-      height: 1px; background: var(--accent);
-      transform: scaleX(0);
-      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-      transform-origin: right;
+      position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px;
+      background: var(--accent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s;
     }
-    .nav-links a:hover { opacity: 1; }
-    .nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
+    .nav-logo:hover::after { transform: scaleX(1); }
 
-    /* hamburger */
+    .nav-links { display: flex; gap: 3rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.65rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: rgba(248,243,236,0.5);
+      text-decoration: none; position: relative;
+      transition: color 0.3s;
+    }
+    .nav-links a::before {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0;
+      color: var(--accent);
+      clip-path: inset(0 100% 0 0);
+      transition: clip-path 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .nav-links a:hover::before { clip-path: inset(0 0% 0 0); }
+
     .hamburger {
       display: none; flex-direction: column;
-      gap: 5px; cursor: pointer; padding: 4px;
+      gap: 6px; cursor: none; padding: 4px;
       background: none; border: none;
     }
     .hamburger span {
-      display: block; width: 24px; height: 1.5px;
-      background: var(--dark);
-      transition: transform 0.3s, opacity 0.3s;
+      display: block; width: 28px; height: 1px;
+      background: var(--cream); transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
     }
-    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: translateX(-10px); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
     .mobile-menu {
-      position: fixed; inset: 0;
-      background: var(--cream);
-      z-index: 99;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 2.5rem;
+      position: fixed; inset: 0; background: var(--dark);
+      z-index: 99; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 3rem;
       transform: translateX(100%);
-      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+      transition: transform 0.6s cubic-bezier(0.76,0,0.24,1);
     }
     .mobile-menu.open { transform: translateX(0); }
     .mobile-menu a {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      font-style: italic;
-      color: var(--dark);
-      text-decoration: none;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.4s, transform 0.4s;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem; font-style: italic; font-weight: 300;
+      color: var(--cream); text-decoration: none;
+      opacity: 0; transform: translateX(40px);
+      transition: opacity 0.5s, transform 0.5s, color 0.3s;
     }
-    .mobile-menu.open a {
-      opacity: 1; transform: translateY(0);
-    }
-    .mobile-menu.open a:nth-child(1) { transition-delay: 0.1s; }
-    .mobile-menu.open a:nth-child(2) { transition-delay: 0.2s; }
-    .mobile-menu.open a:nth-child(3) { transition-delay: 0.3s; }
+    .mobile-menu.open a { opacity: 1; transform: translateX(0); }
+    .mobile-menu.open a:nth-child(1) { transition-delay: 0.15s; }
+    .mobile-menu.open a:nth-child(2) { transition-delay: 0.25s; }
+    .mobile-menu.open a:nth-child(3) { transition-delay: 0.35s; }
+    .mobile-menu a:hover { color: var(--accent); }
 
     @media (max-width: 768px) {
       .nav-links { display: none; }
@@ -151,297 +163,468 @@
       align-items: center; justify-content: center;
       text-align: center;
       padding: 8rem 1.5rem 4rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-bg {
-      position: absolute; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 60%, rgba(201,169,110,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(139,105,20,0.07) 0%, transparent 60%);
-    }
-    /* floating grain texture */
-    .hero-bg::after {
-      content: '';
-      position: absolute; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      opacity: 0.5;
-      pointer-events: none;
+      position: relative; overflow: hidden;
     }
 
+    /* Animated gradient orbs */
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none;
+      opacity: 0; animation: orb-appear 2s ease forwards;
+    }
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(201,169,110,0.15), transparent 70%);
+      top: -10%; left: -15%;
+      animation-delay: 0.3s;
+      animation: orb-appear 2s 0.3s ease forwards, orb-drift-1 12s 2.3s ease-in-out infinite alternate;
+    }
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(122,92,30,0.1), transparent 70%);
+      bottom: -10%; right: -10%;
+      animation: orb-appear 2s 0.6s ease forwards, orb-drift-2 15s 2.6s ease-in-out infinite alternate;
+    }
+    .orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(201,169,110,0.08), transparent 70%);
+      top: 40%; left: 55%;
+      animation: orb-appear 2s 1s ease forwards, orb-drift-3 10s 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes orb-appear { to { opacity: 1; } }
+    @keyframes orb-drift-1 { to { transform: translate(40px, 30px); } }
+    @keyframes orb-drift-2 { to { transform: translate(-30px, -40px); } }
+    @keyframes orb-drift-3 { to { transform: translate(-20px, 20px); } }
+
+    /* Horizontal scan line */
+    .scan-line {
+      position: absolute; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201,169,110,0.3), transparent);
+      animation: scan 8s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scan {
+      0% { top: -1px; opacity: 0; }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* Hero text */
+    .hero-content { position: relative; z-index: 2; }
+
     .hero-eyebrow {
-      font-size: 0.65rem;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      color: var(--accent2);
-      margin-bottom: 1.5rem;
-      opacity: 0;
-      transform: translateY(16px);
-      animation: rise 0.9s 0.2s cubic-bezier(0.4,0,0.2,1) forwards;
+      font-size: 0.62rem; letter-spacing: 0.45em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 2rem;
+      opacity: 0; transform: translateY(20px);
+      animation: rise 0.8s 0.5s ease forwards;
     }
 
     .hero-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(3rem, 10vw, 7.5rem);
-      font-weight: 400;
-      line-height: 1.05;
-      letter-spacing: -0.01em;
-      color: var(--dark);
-      opacity: 0;
-      transform: translateY(24px);
-      animation: rise 1s 0.4s cubic-bezier(0.4,0,0.2,1) forwards;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 11vw, 9rem);
+      font-weight: 300; line-height: 0.95;
+      letter-spacing: -0.02em;
+      opacity: 0; transform: translateY(32px);
+      animation: rise 1.2s 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
     }
+    .hero-title .line { overflow: hidden; display: block; }
     .hero-title em {
-      font-style: italic;
-      color: var(--accent2);
+      font-style: italic; color: var(--accent);
+      position: relative;
+    }
+    /* Gold shimmer on name */
+    .hero-title em::after {
+      content: attr(data-text);
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,220,120,0.6) 50%, transparent 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      animation: shimmer 4s 2s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%, 100% { background-position: 200% 0; }
+      50% { background-position: -200% 0; }
     }
 
-    .hero-rule {
-      width: 1px; height: 0;
-      background: linear-gradient(to bottom, var(--accent), transparent);
-      margin: 2rem auto;
-      animation: grow-line 1s 0.8s ease forwards;
+    .hero-divider {
+      width: 0; height: 1px;
+      background: linear-gradient(to right, transparent, var(--accent), transparent);
+      margin: 2.5rem auto;
+      animation: expand-width 1s 1.5s ease forwards;
     }
+    @keyframes expand-width { to { width: 200px; } }
 
     .hero-tagline {
-      font-size: 0.8rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--stone);
-      opacity: 0;
-      animation: rise 0.8s 1s ease forwards;
+      font-size: 0.7rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: rgba(248,243,236,0.35);
+      opacity: 0; animation: rise 0.8s 1.8s ease forwards;
     }
+
+    /* Animated letter counter */
+    .hero-counter {
+      position: absolute; bottom: 3rem; right: 3rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 5rem; font-weight: 300; font-style: italic;
+      color: rgba(201,169,110,0.06);
+      letter-spacing: -0.05em;
+      user-select: none;
+      animation: counter-fade 3s 2s ease forwards;
+    }
+    @keyframes counter-fade { to { color: rgba(201,169,110,0.06); opacity:1; } }
 
     .scroll-hint {
       position: absolute; bottom: 2.5rem; left: 50%;
       transform: translateX(-50%);
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
-      opacity: 0;
-      animation: rise 0.8s 1.4s ease forwards;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      opacity: 0; animation: rise 0.8s 2.2s ease forwards;
     }
     .scroll-hint span {
-      font-size: 0.6rem; letter-spacing: 0.25em;
-      text-transform: uppercase; color: var(--stone);
+      font-size: 0.55rem; letter-spacing: 0.35em;
+      text-transform: uppercase; color: rgba(248,243,236,0.3);
     }
     .scroll-line {
-      width: 1px; height: 40px;
-      background: linear-gradient(to bottom, var(--stone), transparent);
-      animation: scroll-pulse 2s 1.8s ease-in-out infinite;
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scroll-pulse 2s 2.5s ease-in-out infinite;
+      transform-origin: top;
+    }
+    @keyframes scroll-pulse {
+      0% { transform: scaleY(0); opacity: 0; }
+      50% { transform: scaleY(1); opacity: 1; }
+      100% { transform: scaleY(0) translateY(100%); opacity: 0; }
+    }
+
+    /* ── SECTION COMMON ── */
+    .section-label {
+      font-size: 0.6rem; letter-spacing: 0.4em;
+      text-transform: uppercase; color: var(--accent);
     }
 
     /* ── GALLERY ── */
-    .section-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--accent2);
+    #work { 
+      padding: clamp(4rem,10vw,8rem) clamp(1rem,3vw,2rem);
+      background: var(--dark); position: relative;
+    }
+
+    /* Animated grid title */
+    .gallery-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem,7vw,5rem);
+      font-weight: 300; line-height: 1;
     }
 
     /* Filter tabs */
     .filter-tabs {
       display: flex; gap: 0; flex-wrap: wrap;
-      border: 1px solid var(--sand);
-      border-radius: 100px;
-      padding: 4px;
-      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(201,169,110,0.2);
+      border-radius: 100px; padding: 4px;
+      background: rgba(255,255,255,0.03);
     }
     .filter-tab {
-      padding: 0.5rem 1.25rem;
-      font-size: 0.7rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      border-radius: 100px;
-      border: none;
-      background: none;
-      color: var(--dark);
-      opacity: 0.5;
-      cursor: pointer;
-      transition: all 0.3s;
+      padding: 0.5rem 1.4rem;
+      font-size: 0.65rem; letter-spacing: 0.2em;
+      text-transform: uppercase; border-radius: 100px;
+      border: none; background: none;
+      color: rgba(248,243,236,0.4);
+      cursor: none; transition: all 0.4s;
     }
     .filter-tab.active {
-      background: var(--dark);
-      color: var(--cream);
-      opacity: 1;
+      background: var(--accent); color: var(--dark);
     }
+    .filter-tab:hover:not(.active) { color: var(--cream); }
 
-    /* Uniform CSS Grid */
+    /* Gallery grid with stagger entrance */
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      width: 100%;
+      grid-template-columns: repeat(2, 1fr); gap: 10px;
     }
-    @media (min-width: 640px)  { .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
-    @media (min-width: 900px)  { .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
-    @media (min-width: 1200px) { .gallery-grid { grid-template-columns: repeat(4, 1fr); gap: 18px; } }
+    @media (min-width: 640px)  { .gallery-grid { gap: 12px; } }
+    @media (min-width: 900px)  { .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
+    @media (min-width: 1200px) { .gallery-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
 
     .gallery-card {
-      position: relative;
-      border-radius: 8px;
-      overflow: hidden;
-      background: var(--sand);
-      cursor: pointer;
-      aspect-ratio: 4 / 3;
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      position: relative; border-radius: 4px; overflow: hidden;
+      background: #2a2218; cursor: none; aspect-ratio: 4/3;
+      opacity: 0; transform: scale(0.92) translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
     }
-
-    .gallery-card.visible { opacity: 1; transform: translateY(0); }
+    .gallery-card.visible { opacity: 1; transform: scale(1) translateY(0); }
 
     .gallery-card img {
-      width: 100%; height: 100%;
-      object-fit: cover; display: block;
-      transition: transform 0.8s cubic-bezier(0.4,0,0.2,1);
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 1s cubic-bezier(0.25,0.46,0.45,0.94),
+                  filter 0.6s ease;
+      filter: saturate(0.9) brightness(0.92);
     }
-    .gallery-card:hover img { transform: scale(1.06); }
+    .gallery-card:hover img {
+      transform: scale(1.08);
+      filter: saturate(1.1) brightness(1);
+    }
+
+    /* Animated shimmer border on hover */
+    .gallery-card::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 2;
+      border-radius: 4px;
+      background: conic-gradient(
+        from var(--angle, 0deg),
+        transparent 80%,
+        rgba(201,169,110,0.5) 90%,
+        transparent 100%
+      );
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+    }
+    .gallery-card:hover::before { opacity: 1; --angle: 0deg; animation: spin-border 3s linear infinite; }
+    @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+    @keyframes spin-border { to { --angle: 360deg; } }
 
     .gallery-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(30,20,10,0.55) 0%, transparent 55%);
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      display: flex; align-items: flex-end;
-      padding: 1rem;
+      position: absolute; inset: 0; z-index: 3;
+      background: linear-gradient(to top, rgba(10,6,2,0.75) 0%, transparent 50%);
+      opacity: 0; transition: opacity 0.5s;
+      display: flex; align-items: flex-end; padding: 1rem;
     }
     .gallery-card:hover .gallery-overlay { opacity: 1; }
 
     .gallery-tag {
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.85);
-      border: 1px solid rgba(255,255,255,0.3);
-      padding: 3px 10px;
-      border-radius: 100px;
-      transform: translateY(8px);
-      transition: transform 0.4s ease;
+      font-size: 0.58rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: rgba(255,255,255,0.9);
+      border: 1px solid rgba(255,255,255,0.25);
+      padding: 4px 12px; border-radius: 100px;
+      transform: translateY(12px); transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
     }
     .gallery-card:hover .gallery-tag { transform: translateY(0); }
 
     /* ── LIGHTBOX ── */
     .lightbox {
       position: fixed; inset: 0; z-index: 200;
-      background: rgba(25,18,10,0.95);
-      backdrop-filter: blur(4px);
+      background: rgba(10,6,2,0.97);
       display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none;
-      transition: opacity 0.4s;
+      transition: opacity 0.5s;
     }
     .lightbox.open { opacity: 1; pointer-events: all; }
-    .lightbox img {
-      max-width: min(90vw, 900px);
-      max-height: 90svh;
-      object-fit: contain;
-      border-radius: 4px;
-      transform: scale(0.9);
-      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+
+    .lb-img-wrap {
+      position: relative;
+      transform: scale(0.85) translateY(20px);
+      transition: transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
     }
-    .lightbox.open img { transform: scale(1); }
+    .lightbox.open .lb-img-wrap { transform: scale(1) translateY(0); }
+
+    .lightbox img {
+      max-width: min(88vw, 960px); max-height: 86svh;
+      object-fit: contain; border-radius: 2px;
+      display: block;
+    }
+
+    /* Animated corner brackets */
+    .lb-img-wrap::before, .lb-img-wrap::after,
+    .lb-corner-br, .lb-corner-bl {
+      content: '';
+      position: absolute; width: 24px; height: 24px;
+      border-color: var(--accent); border-style: solid;
+      opacity: 0.5;
+    }
+    .lb-img-wrap::before { top: -8px; left: -8px; border-width: 1px 0 0 1px; }
+    .lb-img-wrap::after  { top: -8px; right: -8px; border-width: 1px 1px 0 0; }
+    .lb-corner-br { bottom: -8px; right: -8px; border-width: 0 1px 1px 0; position: absolute; }
+    .lb-corner-bl { bottom: -8px; left: -8px; border-width: 0 0 1px 1px; position: absolute; }
+
     .lb-close {
       position: absolute; top: 1.5rem; right: 1.5rem;
-      width: 40px; height: 40px;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 50%;
-      background: none; color: white;
-      font-size: 1.1rem; cursor: pointer;
+      width: 44px; height: 44px;
+      border: 1px solid rgba(201,169,110,0.25);
+      border-radius: 50%; background: none; color: var(--cream);
+      font-size: 1rem; cursor: none;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.3s;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
     }
-    .lb-close:hover { background: rgba(255,255,255,0.1); }
+    .lb-close:hover { background: rgba(201,169,110,0.1); border-color: var(--accent); transform: rotate(90deg); }
     .lb-nav {
       position: absolute; top: 50%; transform: translateY(-50%);
-      width: 44px; height: 44px;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 50%;
-      background: none; color: white;
-      font-size: 1.1rem; cursor: pointer;
+      width: 48px; height: 48px;
+      border: 1px solid rgba(201,169,110,0.2);
+      border-radius: 50%; background: none; color: var(--cream);
+      font-size: 1rem; cursor: none;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.3s;
+      transition: all 0.3s;
     }
-    .lb-nav:hover { background: rgba(255,255,255,0.1); }
+    .lb-nav:hover { background: rgba(201,169,110,0.12); border-color: var(--accent); }
     .lb-prev { left: 1.5rem; }
     .lb-next { right: 1.5rem; }
 
     /* ── ABOUT ── */
-    .about-section {
-      background: var(--warm);
+    #about {
+      background: #16110d;
+      padding: clamp(4rem,10vw,8rem) clamp(1rem,3vw,2rem);
+      position: relative; overflow: hidden;
     }
-    .about-photo {
+    #about::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: 
+        radial-gradient(ellipse 70% 50% at 0% 50%, rgba(201,169,110,0.05), transparent),
+        radial-gradient(ellipse 50% 70% at 100% 50%, rgba(122,92,30,0.04), transparent);
+      pointer-events: none;
+    }
+
+    .about-img-wrap {
       position: relative;
     }
-    .about-photo::before {
+    .about-img-wrap::before {
       content: '';
-      position: absolute;
-      inset: -12px -12px 12px 12px;
-      border: 1px solid var(--sand);
-      border-radius: 10px;
-      z-index: -1;
+      position: absolute; inset: -16px -16px 16px 16px;
+      border: 1px solid rgba(201,169,110,0.2); border-radius: 6px;
+      animation: border-pulse 4s ease-in-out infinite;
+    }
+    .about-img-wrap::after {
+      content: '';
+      position: absolute; inset: -32px -32px 32px 32px;
+      border: 1px solid rgba(201,169,110,0.07); border-radius: 10px;
+      animation: border-pulse 4s 0.8s ease-in-out infinite;
+    }
+    @keyframes border-pulse {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.01); }
+    }
+    .about-img-wrap img {
+      width: 100%; border-radius: 4px; display: block;
+      max-height: 520px; object-fit: cover;
+      filter: saturate(0.85);
+      transition: filter 0.8s, transform 0.8s;
+    }
+    .about-img-wrap:hover img {
+      filter: saturate(1.05);
+      transform: scale(1.01);
+    }
+
+    .about-text h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem,5vw,3.5rem);
+      font-weight: 300; line-height: 1.1;
+    }
+
+    /* Typewriter stat numbers */
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem; font-weight: 300; font-style: italic;
+      color: var(--accent); line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.6rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: rgba(248,243,236,0.35);
+      margin-top: 4px;
     }
 
     /* ── CONTACT ── */
+    #contact {
+      padding: clamp(4rem,10vw,8rem) clamp(1rem,3vw,2rem);
+      background: var(--dark); position: relative; overflow: hidden;
+    }
+
+    /* Animated background text */
+    .contact-bg-text {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(6rem, 18vw, 16rem);
+      font-weight: 300; font-style: italic;
+      color: rgba(201,169,110,0.03);
+      white-space: nowrap; letter-spacing: -0.05em;
+      pointer-events: none; user-select: none;
+      animation: bg-text-drift 20s ease-in-out infinite alternate;
+    }
+    @keyframes bg-text-drift {
+      from { transform: translate(-50%, -50%) translateX(-20px); }
+      to   { transform: translate(-50%, -50%) translateX(20px); }
+    }
+
     .contact-link {
-      display: flex; align-items: center; gap: 1rem;
-      padding: 1rem 1.75rem;
-      border: 1px solid var(--sand);
-      border-radius: 100px;
-      text-decoration: none;
-      color: var(--dark);
-      font-size: 0.85rem;
-      transition: all 0.35s;
-      background: transparent;
+      display: flex; align-items: center; gap: 1.25rem;
+      padding: 1.1rem 2rem;
+      border: 1px solid rgba(201,169,110,0.2); border-radius: 100px;
+      text-decoration: none; color: var(--cream);
+      font-size: 0.82rem; font-weight: 200;
+      transition: all 0.5s cubic-bezier(0.34,1.56,0.64,1);
+      background: transparent; position: relative; overflow: hidden;
+      cursor: none;
+    }
+    .contact-link::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(201,169,110,0.12), rgba(122,92,30,0.08));
+      opacity: 0; transition: opacity 0.5s;
     }
     .contact-link:hover {
-      background: var(--dark);
-      color: var(--cream);
-      border-color: var(--dark);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(42,36,32,0.15);
+      border-color: var(--accent);
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 16px 48px rgba(201,169,110,0.12), 0 0 0 1px rgba(201,169,110,0.1);
     }
-    .contact-link svg { flex-shrink: 0; }
-
-    /* ── ANIMATIONS ── */
-    @keyframes rise {
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes grow-line {
-      to { height: 64px; opacity: 1; }
-    }
-    @keyframes scroll-pulse {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 1; }
-    }
-
-    .reveal {
-      opacity: 0; transform: translateY(32px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    .reveal.in { opacity: 1; transform: translateY(0); }
-    .reveal-left {
-      opacity: 0; transform: translateX(-32px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    .reveal-left.in { opacity: 1; transform: translateX(0); }
+    .contact-link:hover::before { opacity: 1; }
+    .contact-link svg { flex-shrink: 0; opacity: 0.7; transition: opacity 0.3s; }
+    .contact-link:hover svg { opacity: 1; }
 
     /* ── FOOTER ── */
     footer {
-      border-top: 1px solid var(--sand);
-      padding: 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-      font-size: 0.75rem;
-      color: var(--stone);
-      letter-spacing: 0.05em;
+      border-top: 1px solid rgba(201,169,110,0.1);
+      padding: 2rem 2.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+      font-size: 0.7rem; color: rgba(248,243,236,0.25);
+      letter-spacing: 0.05em; background: var(--dark);
     }
+    footer .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; font-style: italic; font-weight: 300;
+      color: rgba(201,169,110,0.5);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes rise {
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Reveal classes */
+    .reveal {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .reveal-left {
+      opacity: 0; transform: translateX(-40px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal-left.in { opacity: 1; transform: translateX(0); }
+
+    /* Delay helpers */
+    .d1 { transition-delay: 0.1s; }
+    .d2 { transition-delay: 0.2s; }
+    .d3 { transition-delay: 0.3s; }
+    .d4 { transition-delay: 0.4s; }
+
+    /* About grid */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr;
+      gap: 4rem; align-items: center; max-width: 1100px; margin: auto;
+    }
+    @media (min-width: 820px) { .about-grid { grid-template-columns: 1fr 1fr; } }
   </style>
 </head>
 <body>
 
-<!-- Custom cursor -->
-<div class="cursor" id="cursor"></div>
+<!-- Cursor -->
+<div id="cursor-main"></div>
+<div id="cursor-trail"></div>
+
+<!-- Particle canvas -->
+<canvas id="particle-canvas"></canvas>
 
 <!-- Mobile menu -->
 <div class="mobile-menu" id="mobileMenu">
@@ -450,13 +633,13 @@
   <a href="#contact" onclick="closeMenu()">Contact</a>
 </div>
 
-<!-- Navigation -->
+<!-- Nav -->
 <nav id="navbar">
   <a href="#" class="nav-logo">SH</a>
   <ul class="nav-links">
-    <li><a href="#work">Work</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#work" data-text="Work">Work</a></li>
+    <li><a href="#about" data-text="About">About</a></li>
+    <li><a href="#contact" data-text="Contact">Contact</a></li>
   </ul>
   <button class="hamburger" id="hamburger" aria-label="Menu" onclick="toggleMenu()">
     <span></span><span></span><span></span>
@@ -465,15 +648,22 @@
 
 <!-- Hero -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div style="position:relative;z-index:1">
-    <p class="hero-eyebrow" id="hero-subtitle">Capturing Moments, Creating Memories</p>
-    <h1 class="hero-title" id="hero-title">
-      Sai <em>Harsha</em><br>Photography
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="scan-line"></div>
+  <div class="hero-counter" id="heroCounter">24</div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Capturing Moments · Creating Memories</p>
+    <h1 class="hero-title">
+      <span class="line">Sai <em data-text="Harsha">Harsha</em></span>
+      <span class="line" style="opacity:0.18;font-size:0.45em;letter-spacing:0.3em;font-weight:100;font-style:normal;font-family:'Outfit',sans-serif;text-transform:uppercase;margin-top:0.5em;display:block;">Photography</span>
     </h1>
-    <div class="hero-rule"></div>
-    <p class="hero-tagline">Nature · Portraits · Street</p>
+    <div class="hero-divider"></div>
+    <p class="hero-tagline">Nature &nbsp;·&nbsp; Portraits &nbsp;·&nbsp; Street</p>
   </div>
+
   <div class="scroll-hint">
     <span>Scroll</span>
     <div class="scroll-line"></div>
@@ -481,14 +671,13 @@
 </section>
 
 <!-- Gallery -->
-<section id="work" style="padding: clamp(3rem,8vw,6rem) clamp(1rem,4vw,2.5rem);">
-  <div style="max-width:1400px;margin:auto;">
-    <div class="reveal" style="text-align:center;margin-bottom:2.5rem;">
-      <p class="section-label" style="margin-bottom:1rem;">Portfolio</p>
-      <h2 class="font-display" style="font-size:clamp(2rem,5vw,3.5rem);font-weight:400;margin-bottom:2rem;">
-        Selected <em>Work</em>
+<section id="work">
+  <div style="max-width:1500px;margin:auto;">
+    <div class="reveal" style="text-align:center;margin-bottom:3rem;">
+      <p class="section-label" style="margin-bottom:1.2rem;">Portfolio</p>
+      <h2 class="gallery-heading" style="margin-bottom:2.5rem;">
+        Selected <em style="font-style:italic;color:var(--accent);">Work</em>
       </h2>
-      <!-- Filter tabs -->
       <div style="display:flex;justify-content:center;">
         <div class="filter-tabs">
           <button class="filter-tab active" data-filter="all">All</button>
@@ -500,183 +689,94 @@
     </div>
 
     <div class="gallery-grid" id="galleryGrid">
-      <!-- Portrait 0 -->
-      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(0)">
-        <img src="https://i.imgur.com/HVBIIy3.jpeg" alt="Portrait photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div>
-      </div>
-      <!-- Nature 1 -->
-      <div class="gallery-card" data-cat="nature" onclick="openLightbox(1)">
-        <img src="https://i.imgur.com/qMJnqkD.jpeg" alt="Nature photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Nature</span></div>
-      </div>
-      <!-- Portrait 1 -->
-      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(2)">
-        <img src="https://i.imgur.com/s4i0zmI.jpeg" alt="Portrait photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div>
-      </div>
-      <!-- Street 1 -->
-      <div class="gallery-card" data-cat="street" onclick="openLightbox(3)">
-        <img src="https://i.imgur.com/SkfUf8Y.jpeg" alt="Street photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Street</span></div>
-      </div>
-      <!-- Nature 2 -->
-      <div class="gallery-card" data-cat="nature" onclick="openLightbox(4)">
-        <img src="https://i.imgur.com/forCSOD.jpeg" alt="Nature photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Nature</span></div>
-      </div>
-      <!-- Portrait 2 -->
-      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(5)">
-        <img src="https://i.imgur.com/9nGAK7D.jpeg" alt="Portrait photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div>
-      </div>
-      <!-- Street 2 -->
-      <div class="gallery-card" data-cat="street" onclick="openLightbox(6)">
-        <img src="https://i.imgur.com/IUfOffU.jpeg" alt="Street photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Street</span></div>
-      </div>
-      <!-- Nature 3 -->
-      <div class="gallery-card" data-cat="nature" onclick="openLightbox(7)">
-        <img src="https://i.imgur.com/KWtPqRg.jpeg" alt="Nature photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Nature</span></div>
-      </div>
-      <!-- Portrait 3 -->
-      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(8)">
-        <img src="https://i.imgur.com/nEi9r2z.jpeg" alt="Portrait photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div>
-      </div>
-      <!-- Street 3 -->
-      <div class="gallery-card" data-cat="street" onclick="openLightbox(9)">
-        <img src="https://i.imgur.com/3lnWeCg.jpeg" alt="Street photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Street</span></div>
-      </div>
-      <!-- Nature 4 -->
-      <div class="gallery-card" data-cat="nature" onclick="openLightbox(10)">
-        <img src="https://i.imgur.com/uhwrlVO.jpeg" alt="Nature photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Nature</span></div>
-      </div>
-      <!-- Portrait 4 -->
-      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(11)">
-        <img src="https://i.imgur.com/F3YvV1y.jpeg" alt="Portrait photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div>
-      </div>
-      <!-- Street 4 -->
-      <div class="gallery-card" data-cat="street" onclick="openLightbox(12)">
-        <img src="https://i.imgur.com/10Na2Es.jpeg" alt="Street photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Street</span></div>
-      </div>
-      <!-- Nature 5 -->
-      <div class="gallery-card" data-cat="nature" onclick="openLightbox(13)">
-        <img src="https://i.imgur.com/YWFcL8T.jpeg" alt="Nature photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Nature</span></div>
-      </div>
-      <!-- Portrait 5 -->
-      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(14)">
-        <img src="https://i.imgur.com/zKcBDil.jpeg" alt="Portrait photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div>
-      </div>
-      <!-- Street 5 -->
-      <div class="gallery-card" data-cat="street" onclick="openLightbox(15)">
-        <img src="https://i.imgur.com/XLdv5iY.jpeg" alt="Street photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Street</span></div>
-      </div>
-      <!-- Nature 6 -->
-      <div class="gallery-card" data-cat="nature" onclick="openLightbox(16)">
-        <img src="https://i.imgur.com/c4rhzN7.jpeg" alt="Nature photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Nature</span></div>
-      </div>
-      <!-- Portrait 6 -->
-      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(17)">
-        <img src="https://i.imgur.com/3EYiNHT.jpeg" alt="Portrait photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div>
-      </div>
-      <!-- Street 6 -->
-      <div class="gallery-card" data-cat="street" onclick="openLightbox(18)">
-        <img src="https://i.imgur.com/N6r79NT.jpeg" alt="Street photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Street</span></div>
-      </div>
-      <!-- Nature 7 -->
-      <div class="gallery-card" data-cat="nature" onclick="openLightbox(19)">
-        <img src="https://i.imgur.com/pP3xIxa.jpeg" alt="Nature photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Nature</span></div>
-      </div>
-      <!-- Portrait 7 -->
-      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(20)">
-        <img src="https://i.imgur.com/pUhK4EE.jpeg" alt="Portrait photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div>
-      </div>
-      <!-- Street 7 -->
-      <div class="gallery-card" data-cat="street" onclick="openLightbox(21)">
-        <img src="https://i.imgur.com/hteGmof.jpeg" alt="Street photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Street</span></div>
-      </div>
-      <!-- Nature 8 -->
-      <div class="gallery-card" data-cat="nature" onclick="openLightbox(22)">
-        <img src="https://i.imgur.com/cA87MH5.jpeg" alt="Nature photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Nature</span></div>
-      </div>
-      <!-- Portrait 8 -->
-      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(23)">
-        <img src="https://i.imgur.com/pTk7WpX.jpeg" alt="Portrait photography" loading="lazy">
-        <div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div>
-      </div>
+      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(0)"><img src="https://i.imgur.com/HVBIIy3.jpeg" alt="Portrait" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div></div>
+      <div class="gallery-card" data-cat="nature" onclick="openLightbox(1)"><img src="https://i.imgur.com/qMJnqkD.jpeg" alt="Nature" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Nature</span></div></div>
+      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(2)"><img src="https://i.imgur.com/s4i0zmI.jpeg" alt="Portrait" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div></div>
+      <div class="gallery-card" data-cat="street" onclick="openLightbox(3)"><img src="https://i.imgur.com/SkfUf8Y.jpeg" alt="Street" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Street</span></div></div>
+      <div class="gallery-card" data-cat="nature" onclick="openLightbox(4)"><img src="https://i.imgur.com/forCSOD.jpeg" alt="Nature" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Nature</span></div></div>
+      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(5)"><img src="https://i.imgur.com/9nGAK7D.jpeg" alt="Portrait" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div></div>
+      <div class="gallery-card" data-cat="street" onclick="openLightbox(6)"><img src="https://i.imgur.com/IUfOffU.jpeg" alt="Street" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Street</span></div></div>
+      <div class="gallery-card" data-cat="nature" onclick="openLightbox(7)"><img src="https://i.imgur.com/KWtPqRg.jpeg" alt="Nature" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Nature</span></div></div>
+      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(8)"><img src="https://i.imgur.com/nEi9r2z.jpeg" alt="Portrait" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div></div>
+      <div class="gallery-card" data-cat="street" onclick="openLightbox(9)"><img src="https://i.imgur.com/3lnWeCg.jpeg" alt="Street" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Street</span></div></div>
+      <div class="gallery-card" data-cat="nature" onclick="openLightbox(10)"><img src="https://i.imgur.com/uhwrlVO.jpeg" alt="Nature" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Nature</span></div></div>
+      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(11)"><img src="https://i.imgur.com/F3YvV1y.jpeg" alt="Portrait" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div></div>
+      <div class="gallery-card" data-cat="street" onclick="openLightbox(12)"><img src="https://i.imgur.com/10Na2Es.jpeg" alt="Street" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Street</span></div></div>
+      <div class="gallery-card" data-cat="nature" onclick="openLightbox(13)"><img src="https://i.imgur.com/YWFcL8T.jpeg" alt="Nature" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Nature</span></div></div>
+      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(14)"><img src="https://i.imgur.com/zKcBDil.jpeg" alt="Portrait" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div></div>
+      <div class="gallery-card" data-cat="street" onclick="openLightbox(15)"><img src="https://i.imgur.com/XLdv5iY.jpeg" alt="Street" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Street</span></div></div>
+      <div class="gallery-card" data-cat="nature" onclick="openLightbox(16)"><img src="https://i.imgur.com/c4rhzN7.jpeg" alt="Nature" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Nature</span></div></div>
+      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(17)"><img src="https://i.imgur.com/3EYiNHT.jpeg" alt="Portrait" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div></div>
+      <div class="gallery-card" data-cat="street" onclick="openLightbox(18)"><img src="https://i.imgur.com/N6r79NT.jpeg" alt="Street" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Street</span></div></div>
+      <div class="gallery-card" data-cat="nature" onclick="openLightbox(19)"><img src="https://i.imgur.com/pP3xIxa.jpeg" alt="Nature" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Nature</span></div></div>
+      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(20)"><img src="https://i.imgur.com/pUhK4EE.jpeg" alt="Portrait" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div></div>
+      <div class="gallery-card" data-cat="street" onclick="openLightbox(21)"><img src="https://i.imgur.com/hteGmof.jpeg" alt="Street" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Street</span></div></div>
+      <div class="gallery-card" data-cat="nature" onclick="openLightbox(22)"><img src="https://i.imgur.com/cA87MH5.jpeg" alt="Nature" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Nature</span></div></div>
+      <div class="gallery-card" data-cat="portrait" onclick="openLightbox(23)"><img src="https://i.imgur.com/pTk7WpX.jpeg" alt="Portrait" loading="lazy"><div class="gallery-overlay"><span class="gallery-tag">Portrait</span></div></div>
     </div>
   </div>
 </section>
 
 <!-- About -->
-<section id="about" class="about-section" style="padding: clamp(3rem,8vw,6rem) clamp(1rem,4vw,2.5rem);">
-  <div style="max-width:1000px;margin:auto;">
-    <div style="display:grid;grid-template-columns:1fr;gap:3rem;align-items:center;">
-      <div class="reveal-left about-photo" style="position:relative;">
-        <img src="https://i.imgur.com/d6zqjaC.jpeg" alt="Sai Harsha"
-          style="width:100%;border-radius:8px;display:block;max-height:500px;object-fit:cover;">
-      </div>
-      <div class="reveal">
-        <p class="section-label" style="margin-bottom:1rem;">About</p>
-        <h2 class="font-display" style="font-size:clamp(2rem,5vw,3rem);font-weight:400;margin-bottom:1.5rem;">
-          The <em>Photographer</em>
-        </h2>
-        <div style="width:48px;height:1px;background:var(--accent);margin-bottom:1.75rem;"></div>
-        <p id="about-text" style="color:#6b5e56;line-height:1.85;margin-bottom:1.25rem;font-weight:300;">
-          I'm Sai Harsha, a passionate photographer with an eye for the extraordinary in the ordinary. Through my lens, I explore the delicate interplay of light, shadow, and emotion that makes each moment unique. From the serene beauty of nature to the raw energy of street life, I strive to capture stories that resonate with the soul.
-        </p>
-        <p style="color:#8b7b72;line-height:1.85;font-size:0.9rem;font-style:italic;">
-          Every photograph is an invitation to pause, reflect, and find beauty in the world around us.
-        </p>
+<section id="about">
+  <div class="about-grid">
+    <div class="reveal-left about-img-wrap">
+      <img src="https://i.imgur.com/d6zqjaC.jpeg" alt="Sai Harsha">
+    </div>
+    <div class="reveal" style="padding: 1rem 0;">
+      <p class="section-label" style="margin-bottom:1.25rem;">About</p>
+      <h2 class="about-text h2" style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:300;margin-bottom:1.75rem;">
+        The <em style="color:var(--accent);font-style:italic;">Photographer</em>
+      </h2>
+      <div style="width:48px;height:1px;background:linear-gradient(to right,var(--accent),transparent);margin-bottom:2rem;"></div>
+      <p style="color:rgba(248,243,236,0.55);line-height:1.95;margin-bottom:1.5rem;font-weight:200;font-size:0.95rem;">
+        I'm Sai Harsha, a passionate photographer with an eye for the extraordinary in the ordinary. Through my lens, I explore the delicate interplay of light, shadow, and emotion that makes each moment unique. From the serene beauty of nature to the raw energy of street life, I strive to capture stories that resonate with the soul.
+      </p>
+      <p style="color:rgba(201,169,110,0.5);line-height:1.85;font-size:0.85rem;font-family:'Cormorant Garamond',serif;font-style:italic;margin-bottom:2.5rem;">
+        Every photograph is an invitation to pause, reflect, and find beauty in the world around us.
+      </p>
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
+        <div class="reveal d1">
+          <div class="stat-number" data-target="2">0</div>
+          <div class="stat-label">Years Active</div>
+        </div>
+        <div class="reveal d2">
+          <div class="stat-number" data-target="24">0</div>
+          <div class="stat-label">Projects</div>
+        </div>
+        <div class="reveal d3">
+          <div class="stat-number" data-target="3">0</div>
+          <div class="stat-label">Genres</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Contact -->
-<section id="contact" style="padding: clamp(3rem,8vw,6rem) clamp(1rem,4vw,2.5rem);">
-  <div style="max-width:640px;margin:auto;text-align:center;">
+<section id="contact">
+  <div class="contact-bg-text">Connect</div>
+  <div style="max-width:600px;margin:auto;text-align:center;position:relative;z-index:1;">
     <div class="reveal">
-      <p class="section-label" style="margin-bottom:1rem;">Get in Touch</p>
-      <h2 class="font-display" style="font-size:clamp(2rem,5vw,3rem);font-weight:400;margin-bottom:1.5rem;">
-        Let's Create <em>Together</em>
+      <p class="section-label" style="margin-bottom:1.25rem;">Get in Touch</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,7vw,5rem);font-weight:300;line-height:1;margin-bottom:1.5rem;">
+        Let's Create <em style="color:var(--accent);font-style:italic;">Together</em>
       </h2>
-      <div style="width:48px;height:1px;background:var(--accent);margin:0 auto 3rem;"></div>
+      <div style="width:48px;height:1px;background:linear-gradient(to right,transparent,var(--accent),transparent);margin:0 auto 3.5rem;"></div>
     </div>
-    <div class="reveal" style="display:flex;flex-direction:column;gap:1rem;align-items:center;">
-      <a href="mailto:harshayalala511@gmail.com" class="contact-link" style="width:100%;max-width:400px;justify-content:center;">
-        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-        </svg>
-        <span id="email-display">harshayalala511@gmail.com</span>
+    <div class="reveal d2" style="display:flex;flex-direction:column;gap:1rem;align-items:center;">
+      <a href="mailto:harshayalala511@gmail.com" class="contact-link" style="width:100%;max-width:420px;justify-content:center;">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        harshayalala511@gmail.com
       </a>
-      <a href="https://instagram.com/the__lensdiaries" target="_blank" rel="noopener noreferrer" class="contact-link" style="width:100%;max-width:400px;justify-content:center;">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-        </svg>
-        <span id="instagram-display">@the__lensdiaries</span>
+      <a href="https://instagram.com/the__lensdiaries" target="_blank" rel="noopener" class="contact-link" style="width:100%;max-width:420px;justify-content:center;">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        @the__lensdiaries
       </a>
-      <a href="tel:+917989037463" class="contact-link" style="width:100%;max-width:400px;justify-content:center;">
-        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502.756l-2.13 1.065a11.04 11.04 0 005.516 5.516l1.065-2.13a1 1 0 01.756-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-        </svg>
-        <span id="phone-display">+91 7989037463</span>
+      <a href="tel:+917989037463" class="contact-link" style="width:100%;max-width:420px;justify-content:center;">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502.756l-2.13 1.065a11.04 11.04 0 005.516 5.516l1.065-2.13a1 1 0 01.756-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+        +91 7989037463
       </a>
     </div>
   </div>
@@ -684,7 +784,7 @@
 
 <!-- Footer -->
 <footer>
-  <span class="font-display" style="font-style:italic;font-size:1rem;">SH</span>
+  <span class="footer-logo">SH</span>
   <span>© 2024 Sai Harsha Photography</span>
   <span>Crafted with passion</span>
 </footer>
@@ -693,128 +793,230 @@
 <div class="lightbox" id="lightbox">
   <button class="lb-close" onclick="closeLightbox()">✕</button>
   <button class="lb-nav lb-prev" onclick="lbNav(-1)">&#8592;</button>
-  <img id="lbImg" src="" alt="">
+  <div class="lb-img-wrap">
+    <img id="lbImg" src="" alt="">
+    <div class="lb-corner-br"></div>
+    <div class="lb-corner-bl"></div>
+  </div>
   <button class="lb-nav lb-next" onclick="lbNav(1)">&#8594;</button>
 </div>
 
 <script>
-  // ── CURSOR ──
-  const cursor = document.getElementById('cursor');
-  document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-  });
-  document.querySelectorAll('a,button,.gallery-card').forEach(el => {
-    el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
-    el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
-  });
+/* ── CURSOR ── */
+const cursorMain = document.getElementById('cursor-main');
+const cursorTrail = document.getElementById('cursor-trail');
+let mx = 0, my = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursorMain.style.left = mx + 'px';
+  cursorMain.style.top = my + 'px';
+  setTimeout(() => {
+    cursorTrail.style.left = mx + 'px';
+    cursorTrail.style.top = my + 'px';
+  }, 80);
+});
+document.querySelectorAll('a,button,.gallery-card,.filter-tab').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+});
 
-  // ── NAV scroll ──
-  const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 40);
-  });
+/* ── PARTICLE SYSTEM ── */
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
 
-  // ── MOBILE MENU ──
-  function toggleMenu() {
-    const menu = document.getElementById('mobileMenu');
-    const btn = document.getElementById('hamburger');
-    menu.classList.toggle('open');
-    btn.classList.toggle('open');
-    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor() { this.reset(true); }
+  reset(init = false) {
+    this.x = Math.random() * W;
+    this.y = init ? Math.random() * H : H + 10;
+    this.size = Math.random() * 1.2 + 0.3;
+    this.speedY = -(Math.random() * 0.3 + 0.08);
+    this.speedX = (Math.random() - 0.5) * 0.15;
+    this.opacity = 0;
+    this.maxOpacity = Math.random() * 0.4 + 0.05;
+    this.life = 0;
+    this.maxLife = Math.random() * 400 + 200;
   }
-  function closeMenu() {
-    document.getElementById('mobileMenu').classList.remove('open');
-    document.getElementById('hamburger').classList.remove('open');
-    document.body.style.overflow = '';
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.life++;
+    if (this.life < 60) this.opacity = (this.life / 60) * this.maxOpacity;
+    else if (this.life > this.maxLife - 60) this.opacity = ((this.maxLife - this.life) / 60) * this.maxOpacity;
+    if (this.life > this.maxLife || this.y < -10) this.reset();
   }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(201,169,110,${this.opacity})`;
+    ctx.fill();
+  }
+}
 
-  // ── SMOOTH SCROLL ──
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const t = document.querySelector(a.getAttribute('href'));
-      if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
-    });
+for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+function animParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+/* ── NAV ── */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+/* ── MOBILE MENU ── */
+function toggleMenu() {
+  const m = document.getElementById('mobileMenu');
+  const b = document.getElementById('hamburger');
+  m.classList.toggle('open');
+  b.classList.toggle('open');
+  document.body.style.overflow = m.classList.contains('open') ? 'hidden' : '';
+}
+function closeMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ── SMOOTH SCROLL ── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
   });
+});
 
-  // ── SCROLL REVEAL ──
-  const revealObs = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in');
-        revealObs.unobserve(entry.target);
+/* ── SCROLL REVEAL ── */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal,.reveal-left').forEach(el => revealObs.observe(el));
+
+/* ── GALLERY REVEAL ── */
+const cards = document.querySelectorAll('.gallery-card');
+const cardObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); cardObs.unobserve(e.target); }
+  });
+}, { threshold: 0.05, rootMargin: '0px 0px -30px 0px' });
+cards.forEach((c, i) => {
+  c.style.transitionDelay = (i % 4) * 0.08 + 's';
+  cardObs.observe(c);
+});
+
+/* ── FILTER ── */
+let activeFilter = 'all';
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeFilter = tab.dataset.filter;
+    cards.forEach(card => {
+      const match = activeFilter === 'all' || card.dataset.cat === activeFilter;
+      if (!match) {
+        card.style.opacity = '0'; card.style.transform = 'scale(0.9)';
+        setTimeout(() => { card.style.display = 'none'; }, 400);
+      } else {
+        card.style.display = '';
+        setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'scale(1) translateY(0)'; }, 20);
       }
     });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal,.reveal-left').forEach(el => revealObs.observe(el));
-
-  // ── GALLERY REVEAL ──
-  const cards = document.querySelectorAll('.gallery-card');
-  const cardObs = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        cardObs.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
-  cards.forEach((card, i) => {
-    card.style.transitionDelay = (i % 4) * 0.07 + 's';
-    cardObs.observe(card);
   });
+});
 
-  // ── FILTER TABS ──
-  let activeFilter = 'all';
-  document.querySelectorAll('.filter-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      activeFilter = tab.dataset.filter;
-      cards.forEach(card => {
-        const match = activeFilter === 'all' || card.dataset.cat === activeFilter;
-        card.style.display = match ? '' : 'none';
-      });
-    });
-  });
+/* ── LIGHTBOX ── */
+const lbEl = document.getElementById('lightbox');
+const lbImg = document.getElementById('lbImg');
+const srcs = Array.from(cards).map(c => c.querySelector('img').src);
+let lbIdx = 0;
 
-  // ── LIGHTBOX ──
-  const lbEl = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lbImg');
-  const srcs = Array.from(cards).map(c => c.querySelector('img').src);
-  let lbIdx = 0;
+function openLightbox(i) {
+  lbIdx = i; lbImg.src = srcs[i];
+  lbEl.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  lbEl.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function lbNav(dir) {
+  lbIdx = (lbIdx + dir + srcs.length) % srcs.length;
+  lbImg.style.opacity = '0'; lbImg.style.transform = 'translateX(' + (dir * 20) + 'px)';
+  setTimeout(() => {
+    lbImg.src = srcs[lbIdx];
+    lbImg.style.opacity = '1'; lbImg.style.transform = 'translateX(0)';
+  }, 220);
+}
+lbImg.style.transition = 'opacity 0.22s, transform 0.22s';
+lbEl.addEventListener('click', e => { if (e.target === lbEl) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (!lbEl.classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') lbNav(-1);
+  if (e.key === 'ArrowRight') lbNav(1);
+});
 
-  function openLightbox(i) {
-    lbIdx = i;
-    lbImg.src = srcs[i];
-    lbEl.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeLightbox() {
-    lbEl.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  function lbNav(dir) {
-    lbIdx = (lbIdx + dir + srcs.length) % srcs.length;
-    lbImg.style.opacity = 0;
-    setTimeout(() => { lbImg.src = srcs[lbIdx]; lbImg.style.opacity = 1; }, 200);
-  }
-  lbEl.addEventListener('click', e => { if (e.target === lbEl) closeLightbox(); });
-  document.addEventListener('keydown', e => {
-    if (!lbEl.classList.contains('open')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') lbNav(-1);
-    if (e.key === 'ArrowRight') lbNav(1);
-  });
+/* ── HERO COUNTER animate ── */
+let count = 0;
+const counter = document.getElementById('heroCounter');
+const cInt = setInterval(() => {
+  count++;
+  if (counter) counter.textContent = String(count).padStart(2,'0');
+  if (count >= 24) clearInterval(cInt);
+}, 80);
 
-  // ── about responsive grid ──
-  function setAboutGrid() {
-    const aboutGrid = document.querySelector('.about-section > div > div');
-    if (aboutGrid) {
-      aboutGrid.style.gridTemplateColumns = window.innerWidth >= 768 ? '1fr 1fr' : '1fr';
+/* ── STAT COUNTERS ── */
+const statObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const el = e.target.querySelector('.stat-number');
+      if (!el) return;
+      const target = parseInt(el.dataset.target);
+      let n = 0;
+      const step = () => {
+        n++;
+        el.textContent = n;
+        if (n < target) setTimeout(step, 60);
+      };
+      step();
+      statObs.unobserve(e.target);
     }
-  }
-  setAboutGrid();
-  window.addEventListener('resize', setAboutGrid);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.reveal.d1, .reveal.d2, .reveal.d3').forEach(el => {
+  if (el.querySelector('.stat-number')) statObs.observe(el);
+});
+
+/* ── MAGNETIC CARDS ── */
+cards.forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const dx = (e.clientX - cx) / (r.width / 2);
+    const dy = (e.clientY - cy) / (r.height / 2);
+    card.style.transform = `scale(1.02) rotateY(${dx * 6}deg) rotateX(${-dy * 4}deg)`;
+    card.style.transition = 'transform 0.1s ease';
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'scale(1) rotateY(0) rotateX(0)';
+    card.style.transition = 'transform 0.6s cubic-bezier(0.34,1.56,0.64,1), opacity 0.7s ease';
+  });
+});
 </script>
 </body>
 </html>
