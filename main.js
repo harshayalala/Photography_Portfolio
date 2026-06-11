@@ -1,6 +1,14 @@
 'use strict';
 
 const PHOTOS = [
+  { src: 'https://i.imgur.com/rKpVeNc.jpeg '},
+  { src: 'https://i.imgur.com/VInoRAG.jpeg' },
+  { src: 'https://i.imgur.com/JI07NhM.jpeg'  },
+  { src: 'https://i.imgur.com/3vDaGhW.jpeg'},
+  { src: 'https://i.imgur.com/KruyjBE.jpeg' },
+  { src: 'https://i.imgur.com/KrCqFIV.png' },
+  { src: 'https://i.imgur.com/iElRLrF.jpeg' },
+  { src: 'https://i.imgur.com/xCStw5f.jpeg' },
   { src:'https://i.imgur.com/HVBIIy3.jpeg' },
   { src:'https://i.imgur.com/qMJnqkD.jpeg' },
   { src:'https://i.imgur.com/s4i0zmI.jpeg' },
